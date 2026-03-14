@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: your-registry/kube-pod-alerts
+  repository: tussanakorndev/kube-pod-alerts
   tag: "1.0.0"
   pullPolicy: IfNotPresent
 

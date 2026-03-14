@@ -84,8 +84,8 @@ python3 main.py
 ## Docker
 
 ```bash
-docker build -t your-registry/kube-pod-alerts:1.0.0 .
-docker push your-registry/kube-pod-alerts:1.0.0
+docker build -t tussanakorndev/kube-pod-alerts:1.0.0 .
+docker push tussanakorndev/kube-pod-alerts:1.0.0
 ```
 
 ## Helm repository
@@ -132,7 +132,7 @@ Example `values-prod.yaml`:
 
 ```yaml
 image:
-  repository: your-registry/kube-pod-alerts
+  repository: tussanakorndev/kube-pod-alerts
   tag: 1.0.0
 
 env:

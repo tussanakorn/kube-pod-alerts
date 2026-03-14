@@ -44,7 +44,7 @@ spec:
       serviceAccountName: kube-pod-alerts
       containers:
         - name: kube-pod-alerts
-          image: your-registry/kube-pod-alerts:latest
+          image: tussanakorndev/kube-pod-alerts:1.0.0
           imagePullPolicy: IfNotPresent
           env:
             - name: TEAMS_WEBHOOK_URL

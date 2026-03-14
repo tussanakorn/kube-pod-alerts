@@ -5,6 +5,30 @@ entries:
       artifacthub.io/operator: "false"
       artifacthub.io/prerelease: "false"
     apiVersion: v2
+    appVersion: 1.0.2
+    created: "2026-03-14T18:44:25.007930982Z"
+    description: Kubernetes pod failure monitor that sends Microsoft Teams alerts
+    digest: 6b94c260d904ef75c30bb169e629e5619df97409e828fccb9f72c11758edfc23
+    home: https://github.com/tussanakorn/kube-pod-alerts
+    keywords:
+    - kubernetes
+    - pods
+    - alerting
+    - microsoft-teams
+    - monitoring
+    maintainers:
+    - name: Tussanakorn Rat
+    name: kube-pod-alerts
+    sources:
+    - https://github.com/tussanakorn/kube-pod-alerts
+    type: application
+    urls:
+    - https://github.com/tussanakorn/kube-pod-alerts/releases/download/kube-pod-alerts-0.1.4/kube-pod-alerts-0.1.4.tgz
+    version: 0.1.4
+  - annotations:
+      artifacthub.io/operator: "false"
+      artifacthub.io/prerelease: "false"
+    apiVersion: v2
     appVersion: 1.0.1
     created: "2026-03-14T18:24:31.901732888Z"
     description: Kubernetes pod failure monitor that sends Microsoft Teams alerts
@@ -73,4 +97,4 @@ entries:
     urls:
     - https://github.com/tussanakorn/kube-pod-alerts/releases/download/kube-pod-alerts-0.1.1/kube-pod-alerts-0.1.1.tgz
     version: 0.1.1
-generated: "2026-03-14T18:24:31.901745822Z"
+generated: "2026-03-14T18:44:25.00794646Z"

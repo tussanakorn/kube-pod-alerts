@@ -115,7 +115,7 @@ class PodFailureMonitor:
                 self.active_failures[failure.state_key] = failure
                 self._send_failure(failure)
 
-            if self.settings.recovery_alert:
+            if self.settings.recovery_alert and self._can_send_recovery(pod):
                 for state_key in existing_keys:
                     if state_key not in current_keys:
                         recovered = self.active_failures.pop(state_key)
@@ -222,7 +222,7 @@ class PodFailureMonitor:
         pod_uid = pod.metadata.uid or "unknown"
         owners = pod.metadata.owner_references or []
         if owners:
-            owner = owners[0]
+            owner = self._controller_owner(owners)
             if owner.kind == "ReplicaSet":
                 return self._replicaset_identity(namespace, owner.name)
             return f"{namespace}/{owner.name}"
@@ -242,7 +242,7 @@ class PodFailureMonitor:
             )
             owners = replicaset.metadata.owner_references or []
             if owners:
-                identity = f"{namespace}/{owners[0].name}"
+                identity = f"{namespace}/{self._controller_owner(owners).name}"
         except Exception:
             LOGGER.debug(
                 "Falling back to ReplicaSet identity for %s/%s",
@@ -253,6 +253,25 @@ class PodFailureMonitor:
 
         self._replicaset_owner_cache[cache_key] = identity
         return identity
+
+    @staticmethod
+    def _controller_owner(owners):
+        return next((owner for owner in owners if getattr(owner, "controller", False)), owners[0])
+
+    @staticmethod
+    def _can_send_recovery(pod: V1Pod) -> bool:
+        if pod.metadata.deletion_timestamp is not None or pod.status is None:
+            return False
+
+        phase = (pod.status.phase or "").strip()
+        if phase != "Running":
+            return False
+
+        container_statuses = pod.status.container_statuses or []
+        if not container_statuses:
+            return False
+
+        return all(status.ready for status in container_statuses)
 
     @staticmethod
     def _is_ignored(pod: V1Pod) -> bool:

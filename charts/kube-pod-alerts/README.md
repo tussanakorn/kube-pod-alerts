@@ -14,7 +14,7 @@ pods fail or containers enter unhealthy waiting states.
 ```yaml
 image:
   repository: tussanakorndev/kube-pod-alerts
-  tag: "1.0.4"
+  tag: "1.0.5"
 ```
 
 ## Install
@@ -39,7 +39,7 @@ secretEnv:
 ```yaml
 image:
   repository: tussanakorndev/kube-pod-alerts
-  tag: "1.0.4"
+  tag: "1.0.5"
 
 env:
   WEBHOOK_FORMAT: power_automate

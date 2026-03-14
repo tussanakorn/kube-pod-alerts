@@ -1,0 +1,61 @@
+name: Release Image
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "Dockerfile"
+      - "requirements.txt"
+      - "main.py"
+      - "kube_pod_alerts/**"
+      - "charts/kube-pod-alerts/Chart.yaml"
+      - ".github/workflows/release-image.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read image version
+        id: version
+        run: |
+          APP_VERSION=$(sed -n 's/^appVersion: "\(.*\)"$/\1/p' charts/kube-pod-alerts/Chart.yaml)
+          if [ -z "$APP_VERSION" ]; then
+            echo "Unable to determine appVersion from Chart.yaml" >&2
+            exit 1
+          fi
+          echo "app_version=$APP_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: tussanakorndev/kube-pod-alerts
+          tags: |
+            type=raw,value=${{ steps.version.outputs.app_version }}
+            type=raw,value=latest
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

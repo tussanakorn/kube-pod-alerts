@@ -88,6 +88,36 @@ docker build -t your-registry/kube-pod-alerts:1.0.0 .
 docker push your-registry/kube-pod-alerts:1.0.0
 ```
 
+## Helm repository
+
+This repo can publish its Helm chart to GitHub Pages as a Helm repository.
+
+Expected repository URL:
+
+```bash
+https://tussanakorn.github.io/kube-pod-alerts
+```
+
+After GitHub Pages is enabled and the release workflow has run successfully, install with:
+
+```bash
+helm repo add kube-pod-alerts https://tussanakorn.github.io/kube-pod-alerts
+helm repo update
+helm search repo kube-pod-alerts
+helm install kube-pod-alerts kube-pod-alerts/kube-pod-alerts -n monitoring --create-namespace
+```
+
+GitHub setup steps:
+
+1. Create a `gh-pages` branch in the repository.
+2. In GitHub `Settings -> Pages`, set the source branch to `gh-pages`.
+3. Push a chart version bump in `charts/kube-pod-alerts/Chart.yaml` to trigger `.github/workflows/release-charts.yml`.
+4. Add `https://tussanakorn.github.io/kube-pod-alerts` as a Helm repository in Artifact Hub.
+
+Artifact Hub note:
+
+`artifacthub-repo.yml` is included in this repo, but for Verified Publisher setup it must also be available at the root of the published GitHub Pages site.
+
 ## Production deploy
 
 Recommended setup:

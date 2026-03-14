@@ -1,0 +1,5 @@
+repositoryID: ""
+owners:
+  - name: Tussanakorn Rat
+ignore:
+  - name: "*-snapshot"

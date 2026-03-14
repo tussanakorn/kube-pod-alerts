@@ -4,6 +4,8 @@
 
 It is built in Python, uses the Kubernetes Python client, supports in-cluster or kubeconfig auth, and is designed to be deployed as a standalone monitor per cluster.
 
+<img src="docs/images/example-alert.png" alt="Example alert" width="360" />
+
 ## Detects
 
 - Pod phase `Failed`

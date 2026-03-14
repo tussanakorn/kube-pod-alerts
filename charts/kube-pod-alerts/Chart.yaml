@@ -2,7 +2,7 @@ apiVersion: v2
 name: kube-pod-alerts
 description: Kubernetes pod failure monitor that sends Microsoft Teams alerts
 type: application
-version: 0.1.0
+version: 0.1.1
 appVersion: "1.0.0"
 home: https://github.com/tussanakorn/kube-pod-alerts
 sources:

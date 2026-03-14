@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import Iterable, Optional
 
 from kubernetes import watch
-from kubernetes.client import CoreV1Api, V1ContainerStatus, V1Pod
+from kubernetes.client import AppsV1Api, CoreV1Api, V1ContainerStatus, V1Pod
 
 from kube_pod_alerts.config import Settings
 from kube_pod_alerts.flood_filter import FloodFilter
@@ -36,11 +36,13 @@ class FailureEvent:
 class PodFailureMonitor:
     def __init__(self, api: CoreV1Api, notifier: TeamsNotifier, settings: Settings) -> None:
         self.api = api
+        self.apps_api = AppsV1Api(api.api_client)
         self.notifier = notifier
         self.settings = settings
         self.flood_filter = FloodFilter(settings.flood_expire_ms)
         self.active_failures: dict[str, FailureEvent] = {}
         self._lock = threading.Lock()
+        self._replicaset_owner_cache: dict[tuple[str, str], str] = {}
 
     def run(self) -> None:
         namespaces = self.settings.namespaces_only
@@ -214,15 +216,43 @@ class PodFailureMonitor:
         init_statuses = pod.status.init_container_statuses or []
         return [*statuses, *init_statuses]
 
-    @staticmethod
-    def _pod_identity(pod: V1Pod) -> str:
+    def _pod_identity(self, pod: V1Pod) -> str:
         namespace = pod.metadata.namespace or "default"
         pod_name = pod.metadata.name or "unknown"
         pod_uid = pod.metadata.uid or "unknown"
         owners = pod.metadata.owner_references or []
         if owners:
-            return f"{namespace}/{owners[0].name}"
+            owner = owners[0]
+            if owner.kind == "ReplicaSet":
+                return self._replicaset_identity(namespace, owner.name)
+            return f"{namespace}/{owner.name}"
         return f"{namespace}/{pod_name}:{pod_uid}"
+
+    def _replicaset_identity(self, namespace: str, replicaset_name: str) -> str:
+        cache_key = (namespace, replicaset_name)
+        cached_identity = self._replicaset_owner_cache.get(cache_key)
+        if cached_identity is not None:
+            return cached_identity
+
+        identity = f"{namespace}/{replicaset_name}"
+        try:
+            replicaset = self.apps_api.read_namespaced_replica_set(
+                name=replicaset_name,
+                namespace=namespace,
+            )
+            owners = replicaset.metadata.owner_references or []
+            if owners:
+                identity = f"{namespace}/{owners[0].name}"
+        except Exception:
+            LOGGER.debug(
+                "Falling back to ReplicaSet identity for %s/%s",
+                namespace,
+                replicaset_name,
+                exc_info=True,
+            )
+
+        self._replicaset_owner_cache[cache_key] = identity
+        return identity
 
     @staticmethod
     def _is_ignored(pod: V1Pod) -> bool:

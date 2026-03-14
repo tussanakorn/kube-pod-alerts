@@ -27,6 +27,7 @@ jobs:
       - name: Read image version
         id: version
         run: |
+          # Keep Docker tags aligned with the chart appVersion.
           APP_VERSION=$(sed -n 's/^appVersion: "\(.*\)"$/\1/p' charts/kube-pod-alerts/Chart.yaml)
           if [ -z "$APP_VERSION" ]; then
             echo "Unable to determine appVersion from Chart.yaml" >&2

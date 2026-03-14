@@ -1,0 +1,56 @@
+replicaCount: 1
+
+image:
+  repository: your-registry/kube-pod-alerts
+  tag: "1.0.0"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+rbac:
+  create: true
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+
+securityContext:
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+env:
+  WEBHOOK_FORMAT: power_automate
+  KUBE_USE_CLUSTER: "true"
+  KUBE_USE_KUBECONFIG: "false"
+  RECOVERY_ALERT: "true"
+  FLOOD_EXPIRE: "60000"
+  WATCH_TIMEOUT_SECONDS: "300"
+  LOG_LEVEL: INFO
+  KUBE_NAMESPACES_ONLY: ""
+
+secretEnv:
+  TEAMS_WEBHOOK_URL: ""
+
+resources:
+  requests:
+    cpu: 25m
+    memory: 64Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

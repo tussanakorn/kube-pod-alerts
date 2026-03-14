@@ -1,0 +1,3 @@
+1. The kube-pod-alerts deployment watches pod failures and sends alerts to Microsoft Teams.
+2. Confirm the generated Secret includes a valid TEAMS_WEBHOOK_URL before syncing to production.
+3. For Argo CD, point a dedicated Application at this chart path and override values per cluster.

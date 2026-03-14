@@ -84,8 +84,8 @@ python3 main.py
 ## Docker
 
 ```bash
-docker build -t tussanakorndev/kube-pod-alerts:1.0.3 .
-docker push tussanakorndev/kube-pod-alerts:1.0.3
+docker build -t tussanakorndev/kube-pod-alerts:1.0.4 .
+docker push tussanakorndev/kube-pod-alerts:1.0.4
 ```
 
 GitHub Actions can publish the image automatically on pushes to `main`. Set these repository secrets first:
@@ -138,7 +138,7 @@ Example `values-prod.yaml`:
 ```yaml
 image:
   repository: tussanakorndev/kube-pod-alerts
-  tag: 1.0.3
+  tag: 1.0.4
 
 env:
   WEBHOOK_FORMAT: power_automate

@@ -14,7 +14,12 @@ from kube_pod_alerts.notifier import TeamsNotifier
 
 LOGGER = logging.getLogger(__name__)
 IGNORED_WAITING_REASONS = {"ContainerCreating", "PodInitializing"}
-FAILURE_WAITING_REASONS = {"CrashLoopBackOff", "ImagePullBackOff"}
+FAILURE_WAITING_REASONS = {"CrashLoopBackOff", "ImagePullBackOff", "ErrImagePull"}
+CANONICAL_WAITING_REASONS = {
+    "CrashLoopBackOff": "CrashLoopBackOff",
+    "ImagePullBackOff": "ImagePullBackOff",
+    "ErrImagePull": "ImagePullBackOff",
+}
 IGNORE_ANNOTATIONS = {"kube-teams/ignore-pod", "kube-slack/ignore-pod"}
 
 
@@ -154,11 +159,12 @@ class PodFailureMonitor:
             if reason in IGNORED_WAITING_REASONS or reason not in FAILURE_WAITING_REASONS:
                 continue
 
+            canonical_reason = CANONICAL_WAITING_REASONS[reason]
             message = waiting_state.message or f"Container entered {reason}."
             yield FailureEvent(
-                key=f"{identity}:{reason}",
-                state_key=f"{identity}:{reason}",
-                reason=reason,
+                key=f"{identity}:{canonical_reason}",
+                state_key=f"{identity}:{canonical_reason}",
+                reason=canonical_reason,
                 title=f"Pod issue: {namespace}/{pod_name}",
                 text=message,
                 facts={

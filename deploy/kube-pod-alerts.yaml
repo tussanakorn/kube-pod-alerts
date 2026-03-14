@@ -44,7 +44,7 @@ spec:
       serviceAccountName: kube-pod-alerts
       containers:
         - name: kube-pod-alerts
-          image: tussanakorndev/kube-pod-alerts:1.0.2
+          image: tussanakorndev/kube-pod-alerts:1.0.3
           imagePullPolicy: IfNotPresent
           securityContext:
             runAsNonRoot: true

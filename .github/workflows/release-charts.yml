@@ -8,6 +8,7 @@ on:
       - "charts/**"
       - ".github/workflows/release-charts.yml"
       - ".cr.yaml"
+      - "artifacthub-repo.yml"
   workflow_dispatch:
 
 permissions:
@@ -41,3 +42,23 @@ jobs:
           config: .cr.yaml
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Checkout gh-pages
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Publish Artifact Hub metadata
+        run: |
+          cp artifacthub-repo.yml gh-pages/artifacthub-repo.yml
+          cd gh-pages
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git add artifacthub-repo.yml
+          if git diff --cached --quiet; then
+            echo "artifacthub-repo.yml already up to date"
+            exit 0
+          fi
+          git commit -m "Publish Artifact Hub repository metadata"
+          git push origin gh-pages

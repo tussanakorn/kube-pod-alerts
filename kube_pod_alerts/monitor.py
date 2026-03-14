@@ -218,10 +218,11 @@ class PodFailureMonitor:
     def _pod_identity(pod: V1Pod) -> str:
         namespace = pod.metadata.namespace or "default"
         pod_name = pod.metadata.name or "unknown"
+        pod_uid = pod.metadata.uid or "unknown"
         owners = pod.metadata.owner_references or []
         if owners:
             return f"{namespace}/{owners[0].name}"
-        return f"{namespace}/{pod_name}"
+        return f"{namespace}/{pod_name}:{pod_uid}"
 
     @staticmethod
     def _is_ignored(pod: V1Pod) -> bool:
